@@ -1,36 +1,42 @@
-const http = require(&#39;http&#39;);
+const http = require('http');
+
 const PORT = process.env.PORT || 3000;
 const API_URL = process.env.API_URL;
-const VERSION = process.env.APP_VERSION || &#39;1.0&#39;;
-const server = http.createServer(async (req, res) =&gt; {
-console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
-if (req.url === &#39;/health&#39;) {
-res.writeHead(200, { &#39;Content-Type&#39;: &#39;application/json; charset=utf-8&#39; });
-res.end(JSON.stringify({ estado: &#39;ok&#39;, version: VERSION, puerto: PORT }));
-return;
-}
-if (req.url === &#39;/api&#39;) {
-try {
-const respuesta = await fetch(API_URL);
-const datos = await respuesta.text();
-res.writeHead(respuesta.status, { &#39;Content-Type&#39;: &#39;application/json; charset=utf-8&#39; });
-res.end(datos);
-} catch (error) {
-console.error(&#39;Error al conectar con la API:&#39;, error.message);
-res.writeHead(502, { &#39;Content-Type&#39;: &#39;application/json; charset=utf-8&#39; });
-res.end(JSON.stringify({ error: &#39;no se pudo conectar con api-interna&#39; }));
-}
-return;
-}
-res.writeHead(200, { &#39;Content-Type&#39;: &#39;text/html; charset=utf-8&#39; });
-res.end(`
-&lt;h1&gt;Redes con Docker&lt;/h1&gt;
-&lt;p&gt;Servicio público funcionando&lt;/p&gt;
-&lt;p&gt;Versión ${VERSION}&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;/health&quot;&gt;Comprobar /health&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;/api&quot;&gt;Consultar /api&lt;/a&gt;&lt;/p&gt;
-`);
+const VERSION = process.env.APP_VERSION || '1.0';
+
+const server = http.createServer(async (req, res) => {
+  console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
+
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ estado: 'ok', version: VERSION, puerto: PORT }));
+    return;
+  }
+
+  if (req.url === '/api') {
+    try {
+      const respuesta = await fetch(API_URL);
+      const datos = await respuesta.text();
+      res.writeHead(respuesta.status, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(datos);
+    } catch (error) {
+      console.error('Error al conectar con la API:', error.message);
+      res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ error: 'no se pudo conectar con api-interna' }));
+    }
+    return;
+  }
+
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+  res.end(`
+    <h1>Redes con Docker</h1>
+    <p>Servicio público funcionando</p>
+    <p>Versión ${VERSION}</p>
+    <p><a href="/health">Comprobar /health</a></p>
+    <p><a href="/api">Consultar /api</a></p>
+  `);
 });
-server.listen(PORT, &#39;0.0.0.0&#39;, () =&gt; {
-console.log(`web-publica escuchando en ${PORT}`);
+
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`web-publica escuchando en ${PORT}`);
 });

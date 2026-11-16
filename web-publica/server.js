@@ -2,7 +2,7 @@ const http = require('http');
 
 const PORT = process.env.PORT || 3000;
 const API_URL = process.env.API_URL;
-const VERSION = process.env.APP_VERSION || '1.0';
+const VERSION = process.env.APP_VERSION || '2.0';
 
 const server = http.createServer(async (req, res) => {
   console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
